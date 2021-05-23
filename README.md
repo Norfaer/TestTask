@@ -14,3 +14,4 @@ In test.config.js file you can set differend parameters for testing.
 
 ## Concerning test tasks.
 I have added some validation rules for the input (they are included to the tests also). Also in the first task i made it possible to use variable array of available coin values as the second parameter of the function. As long as it includes "1" coin
+Also i added some console output of the test cases (which should not be on live environment)
