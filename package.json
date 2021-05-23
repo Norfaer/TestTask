@@ -1,0 +1,18 @@
+{
+  "name": "TestTask",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha index.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^7.27.0",
+    "mocha": "^8.4.0",
+    "mocha-testcheck": "^1.0.0-rc.0",
+    "request": "^2.88.2"
+  }
+}
