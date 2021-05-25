@@ -8,7 +8,7 @@ npm run test
 ```
 
 ## Test config file.
-In test.config.js file you can set differend parameters for testing.
+In test.config.js file you can set different parameters for testing.
 * For generative tests of "coins task" you can set the depth and range of the test
 * For "hierarchy" task you can set the input and expected result data.
 
