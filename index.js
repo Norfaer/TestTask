@@ -1,3 +1,5 @@
+const { coinService } = require("./test.config");
+
 class ValidationError extends Error {
   constructor(message) {
     super(message);
@@ -6,6 +8,8 @@ class ValidationError extends Error {
 }
 
 module.exports = {
+
+  ///Method 1 - Greedy coin exchange
   doCoinsExchange(n, availableCoins = [1, 5, 10, 25, 100, 200]) {
     // Validating input. 
     // We take only cases that are not related to type.
@@ -26,11 +30,11 @@ module.exports = {
     }
     const sortedCoins = availableCoins.sort((a, b) => b - a);    
     let resultSet = [];
-    for (const coin of sortedCoins) {
+    for (let coin of sortedCoins) {
       d = Math.floor(n / coin);
       r = n % coin;
       if (d) {
-        const appendedSet = new Array(d).fill(coin);
+        let appendedSet = new Array(d).fill(coin);
         resultSet = resultSet.concat(appendedSet);
         n -= d * coin;
       }
@@ -40,12 +44,34 @@ module.exports = {
     }
     throw new Error(`Failed to exchange givven value:${n}`);
   },
+
+  ///Method 2 - recursive search
+  countCoinsExchangeMin: function countCoinsExchangeMin(n, availableCoins, cahedExchange = []) {
+    let minCoins = n;
+    let idx = availableCoins.findIndex(el => el === n);
+    if (idx !== -1) {
+      cahedExchange[n] = 1;
+      return 1
+    }
+    if (cahedExchange[n]) {
+      return cahedExchange[n];
+    }
+    for (let coin of availableCoins.filter((el) => el <= n)) {
+      numCoins = 1 + countCoinsExchangeMin(n - coin, availableCoins, cahedExchange);
+      if ( numCoins < minCoins ) {
+        minCoins = numCoins;
+        cahedExchange[n] = minCoins;
+      }
+    }
+    return minCoins;
+  },
+
   doHierarchy(inArr) {
 
     // Validation input
     // Should not be empty
     if (inArr.length <= 1) {
-      throw new ValidationError('Hierarchy can not be empty');
+      throw new ValidationError('Hierarchy should contain more than one element');
     }
     // Each elelment should be array of 2 elements 
     if (!~inArr.findIndex((el) => { return Array.isArray(el) && el.length === 2 })) {
@@ -53,10 +79,10 @@ module.exports = {
     }
     // First element should have null parent
     if (inArr[0][1] !== null) {
-      throw new ValidationError('The first element is the root');
+      throw new ValidationError('The first element must be the root');
     }
     if (inArr.findIndex((el, idx) => { return idx!==0 ? el[1]===null : false }) >= 1) {
-      throw new ValidationError('The first element is the only root');
+      throw new ValidationError('The first element must be the only root');
     }
     for (let i = 1; i < inArr.length; i++) {
       // Make sure that array is ordered so that parent go before children
@@ -65,7 +91,7 @@ module.exports = {
       }
       // Also make sure we do not have backloop elements where parent=child
       if (inArr[i][0] === inArr[i][1]) {
-        throw new ValidationError('Parent element should not be before child in hierarchy');        
+        throw new ValidationError("Element should not be parent of itself");        
       }
     }
     // Get path (indexes only) for the element with given idx

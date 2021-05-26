@@ -62,7 +62,8 @@ describe(`Coin service test group:`, () => {
     catch (e) {
       assert.fail('Should never get here');
     }
-    console.log(`Test case ${n} => ${a.join(',')} => ${result.join(',')}`);
+    let minCoins = lib.countCoinsExchangeMin(n, a);
+    console.log(`Test case ${n} => ${a.join(',')} => ${result.join(',')} (greedy: ${result.length}, min: ${minCoins})`);
     // The main assumption is that the summ of the array with coins values should be equal to the input value which we decomposed
     checkSum = result.reduce((acc, cur) => acc + cur, 0);
     // Also we check that returned array is within [1,n] size range
