@@ -8,27 +8,26 @@ class ValidationError extends Error {
 }
 
 module.exports = {
-
   ///Method 1 - Greedy coin exchange
   doCoinsExchange(n, availableCoins = [1, 5, 10, 25, 100, 200]) {
-    // Validating input. 
+    // Validating input.
     // We take only cases that are not related to type.
-    if (n<0) {
-      throw new ValidationError('Negatives not allowed');
+    if (n < 0) {
+      throw new ValidationError("Negatives not allowed");
     }
     // Should have non-empty availableCoins array
     if (availableCoins.length <= 1) {
-      throw new ValidationError('Available coins array should have at least 1 element');      
+      throw new ValidationError("Available coins array should have at least 1 element");
     }
     // Should not have zero or negative values in availableCoins
-    if (~availableCoins.findIndex((el) => el <= 0 )) {
-      throw new ValidationError('Should not have zero or negative values in availableCoins');                  
+    if (~availableCoins.findIndex((el) => el <= 0)) {
+      throw new ValidationError("Should not have zero or negative values in availableCoins");
     }
-    // To resolve any cases make sure we have coin with "1" value    
-    if (!~availableCoins.findIndex((el) => el === 1 )) {
-      throw new ValidationError('Available coins array should have coin with "1" value');            
+    // To resolve any cases make sure we have coin with "1" value
+    if (!~availableCoins.findIndex((el) => el === 1)) {
+      throw new ValidationError('Available coins array should have coin with "1" value');
     }
-    const sortedCoins = availableCoins.sort((a, b) => b - a);    
+    const sortedCoins = availableCoins.sort((a, b) => b - a);
     let resultSet = [];
     for (let coin of sortedCoins) {
       d = Math.floor(n / coin);
@@ -45,53 +44,84 @@ module.exports = {
     throw new Error(`Failed to exchange givven value:${n}`);
   },
 
-  ///Method 2 - recursive search
-  countCoinsExchangeMin: function countCoinsExchangeMin(n, availableCoins, cahedExchange = []) {
-    let minCoins = n;
-    let idx = availableCoins.findIndex(el => el === n);
-    if (idx !== -1) {
-      cahedExchange[n] = 1;
-      return 1
-    }
-    if (cahedExchange[n]) {
-      return cahedExchange[n];
-    }
-    for (let coin of availableCoins.filter((el) => el <= n)) {
-      numCoins = 1 + countCoinsExchangeMin(n - coin, availableCoins, cahedExchange);
-      if ( numCoins < minCoins ) {
-        minCoins = numCoins;
-        cahedExchange[n] = minCoins;
+  doCoinsExchangeMin: function doCoinsExchangeMin(n, availableCoins = [1, 5, 10, 25, 100, 200]) {
+    function countCoinsExchangeMin(n, availableCoins, cahedExchange = []) {
+      let minCoins = n;
+      let idx = availableCoins.findIndex((el) => el === n);
+      if (idx !== -1) {
+        cahedExchange[n] = 1;
+        return 1;
       }
+      if (cahedExchange[n]) {
+        return cahedExchange[n];
+      }
+      for (let coin of availableCoins.filter((el) => el <= n)) {
+        let numCoins = 1 + countCoinsExchangeMin(n - coin, availableCoins, cahedExchange);
+        if (numCoins < minCoins) {
+          minCoins = numCoins;
+          cahedExchange[n] = minCoins;
+        }
+      }
+      return minCoins;
     }
-    return minCoins;
+
+    let rest = n;
+    let resultSet = [];
+    let cahedExchange = [];
+    while (rest !== 0) {
+      let minCoins = rest;
+      let nextCoin = 0;
+      for (let coin of availableCoins.filter((el) => el <= rest)) {
+        if (coin === rest) {
+          nextCoin = coin;
+          break;
+        } else {
+          let minCoinsNext = countCoinsExchangeMin(rest - coin, availableCoins, cahedExchange);
+          if (minCoins > minCoinsNext) {
+            minCoins = minCoinsNext;
+            nextCoin = coin;
+          }
+        }
+      }
+      resultSet.push(nextCoin);
+      rest -= nextCoin;
+    }
+    return resultSet;
   },
 
   doHierarchy(inArr) {
-
     // Validation input
     // Should not be empty
     if (inArr.length <= 1) {
-      throw new ValidationError('Hierarchy should contain more than one element');
+      throw new ValidationError("Hierarchy should contain more than one element");
     }
-    // Each elelment should be array of 2 elements 
-    if (!~inArr.findIndex((el) => { return Array.isArray(el) && el.length === 2 })) {
-      throw new ValidationError('Each elelment should be array with 2 elelments');
+    // Each elelment should be array of 2 elements
+    if (
+      !~inArr.findIndex((el) => {
+        return Array.isArray(el) && el.length === 2;
+      })
+    ) {
+      throw new ValidationError("Each elelment should be array with 2 elelments");
     }
     // First element should have null parent
     if (inArr[0][1] !== null) {
-      throw new ValidationError('The first element must be the root');
+      throw new ValidationError("The first element must be the root");
     }
-    if (inArr.findIndex((el, idx) => { return idx!==0 ? el[1]===null : false }) >= 1) {
-      throw new ValidationError('The first element must be the only root');
+    if (
+      inArr.findIndex((el, idx) => {
+        return idx !== 0 ? el[1] === null : false;
+      }) >= 1
+    ) {
+      throw new ValidationError("The first element must be the only root");
     }
     for (let i = 1; i < inArr.length; i++) {
       // Make sure that array is ordered so that parent go before children
-      if (inArr.findIndex(el => el[0] === inArr[i][1]) > i) {
-        throw new ValidationError('Parent element should not be before child in hierarchy');        
+      if (inArr.findIndex((el) => el[0] === inArr[i][1]) > i) {
+        throw new ValidationError("Parent element should not be before child in hierarchy");
       }
       // Also make sure we do not have backloop elements where parent=child
       if (inArr[i][0] === inArr[i][1]) {
-        throw new ValidationError("Element should not be parent of itself");        
+        throw new ValidationError("Element should not be parent of itself");
       }
     }
     // Get path (indexes only) for the element with given idx
@@ -119,17 +149,17 @@ module.exports = {
       }
       return true;
     }
-    let str = '';
+    let str = "";
     for (let i = 0; i < inArr.length; i++) {
       let path = getPath(i);
       if (i) {
-        str += "\n"
+        str += "\n";
       }
       if (path.length) {
         for (let j = 1; j < path.length; j++) {
-          str += isLast(path[j]) ? ' ' : '│';
+          str += isLast(path[j]) ? " " : "│";
         }
-        str += isLast(i) ? '└' : '├';
+        str += isLast(i) ? "└" : "├";
       }
       str += inArr[i][0];
     }
