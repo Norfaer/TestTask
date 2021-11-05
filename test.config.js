@@ -2,7 +2,7 @@ module.exports = {
   coinService: {
     testCount: 201,
     minValue: 100,
-    maxValue: 1000,
+    maxValue: 1001,
   },
   hierarchyService: {
     tests: [
