@@ -1,6 +1,6 @@
 module.exports = {
   coinService: {
-    testCount: 100,
+    testCount: 200,
     minValue: 100,
     maxValue: 1000,
   },
