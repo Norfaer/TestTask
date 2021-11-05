@@ -3,7 +3,7 @@ const { coinService } = require("./test.config");
 class ValidationError extends Error {
   constructor(message) {
     super(message);
-    this.name = "ValidationError!";
+    this.name = "ValidationError!!";
   }
 }
 
